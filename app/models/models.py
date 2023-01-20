@@ -11,7 +11,7 @@ class DishModel(Base):
     title = Column(String)
     description = Column(String)
     price = Column(Float)
-    submenu_id = Column(Integer, ForeignKey('submenu.id'))
+    submenu_id = Column(Integer, ForeignKey('submenu.id', ondelete='CASCADE'))
 
 
 class MenuModel(Base):
@@ -29,5 +29,5 @@ class SubmenuModel(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)
-    menu_id = Column(Integer, ForeignKey('menu.id'))
+    menu_id = Column(Integer, ForeignKey('menu.id', ondelete='CASCADE'))
     dishes = relationship('DishModel', backref='submenu', cascade='all, delete')

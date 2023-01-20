@@ -1,8 +1,8 @@
-"""Added menu, submenu, dish tables
+"""Added menu, submenu, dish
 
-Revision ID: a557485f36ca
+Revision ID: e1d09760b871
 Revises: 
-Create Date: 2023-01-14 05:43:10.927722
+Create Date: 2023-01-21 03:32:54.311331
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'a557485f36ca'
+revision = 'e1d09760b871'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,7 +29,7 @@ def upgrade() -> None:
     sa.Column('title', sa.String(), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('menu_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['menu_id'], ['menu.id'], ),
+    sa.ForeignKeyConstraint(['menu_id'], ['menu.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('dish',
@@ -38,7 +38,7 @@ def upgrade() -> None:
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('price', sa.Float(), nullable=True),
     sa.Column('submenu_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['submenu_id'], ['submenu.id'], ),
+    sa.ForeignKeyConstraint(['submenu_id'], ['submenu.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
