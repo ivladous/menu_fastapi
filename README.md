@@ -4,9 +4,21 @@
 
 *Python 3.10+*
 
-*SQLite*
+*PostgreSQL*
 
-## Install
+##Run app in Docker
+
+```commandline
+docker-compose up -d 
+```
+
+##Run tests in Docker
+
+```commandline
+ docker compose -f .\tests-docker-compose.yml up
+```
+
+## Install without Docker
 
 ```commandline
 python -m venv venv
@@ -23,4 +35,3 @@ alembic upgrade head
 ```commandline
 uvicorn main:app
 ```
-
