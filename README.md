@@ -6,13 +6,13 @@
 
 *PostgreSQL*
 
-##Run app in Docker
+## Run app in Docker
 
 ```commandline
 docker-compose up -d 
 ```
 
-##Run tests in Docker
+## Run tests in Docker
 
 ```commandline
  docker compose -f .\tests-docker-compose.yml up
