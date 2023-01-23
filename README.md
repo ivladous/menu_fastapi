@@ -6,6 +6,9 @@
 
 *PostgreSQL*
 
+
+*Docs at http://localhost:8000/docs*
+
 ## Run app in Docker
 
 ```commandline
