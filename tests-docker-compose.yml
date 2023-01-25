@@ -20,6 +20,8 @@ services:
       - .:/webapp
     ports:
       - "8000:8000"
+    environment:
+      - SQLALCHEMY_SILENCE_UBER_WARNING=1
     depends_on:
       db:
         condition: service_healthy
