@@ -6,13 +6,16 @@
 
 *PostgreSQL*
 
-##Run app in Docker
+
+*Docs at http://localhost:8000/docs*
+
+## Run app in Docker
 
 ```commandline
 docker-compose up -d 
 ```
 
-##Run tests in Docker
+## Run tests in Docker
 
 ```commandline
  docker compose -f .\tests-docker-compose.yml up
