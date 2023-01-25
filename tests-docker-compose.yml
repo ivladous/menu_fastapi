@@ -1,19 +1,19 @@
 version: "3.9"
 services:
-  db:
+  db-test:
     image: postgres:15.1-alpine
     ports:
       - "5432:5432"
     environment:
-      - PGUSER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+      - POSTGRES_USER=tester
+      - POSTGRES_PASSWORD=iliketests
+      - POSTGRES_DB=test
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 10s
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 5s
       timeout: 5s
       retries: 5
-  web:
+  web-test:
     build: .
     command: bash -c "alembic upgrade head && python -m pytest"
     volumes:
@@ -21,7 +21,8 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - TESTING_ENV=1
       - SQLALCHEMY_SILENCE_UBER_WARNING=1
     depends_on:
-      db:
+      db-test:
         condition: service_healthy

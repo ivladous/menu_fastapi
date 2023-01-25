@@ -1,4 +1,5 @@
 from pydantic import BaseSettings
+import os
 
 
 class Settings(BaseSettings):
@@ -9,7 +10,7 @@ class Settings(BaseSettings):
     POSTGRES_HOSTNAME: str
 
     class Config:
-        env_file = '.env'
+        env_file = '.env' if os.environ.get('TESTING_ENV') == str(0) else 'test.env'
         env_file_encoding = 'utf-8'
 
 
