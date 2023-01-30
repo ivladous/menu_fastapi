@@ -23,6 +23,19 @@ services:
     environment:
       - TESTING_ENV=1
       - SQLALCHEMY_SILENCE_UBER_WARNING=1
+      - REDIS_HOST=cache-test
+      - REDIS_DB=1
     depends_on:
       db-test:
         condition: service_healthy
+      cache-test:
+        condition: service_healthy
+  cache-test:
+    image: redis/redis-stack-server:latest
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
