@@ -1,13 +1,13 @@
 """Added menu, submenu, dish
 
 Revision ID: e1d09760b871
-Revises: 
+Revises:
 Create Date: 2023-01-21 03:32:54.311331
 
 """
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'e1d09760b871'

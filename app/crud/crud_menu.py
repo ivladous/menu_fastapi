@@ -1,4 +1,4 @@
-from sqlalchemy import func, distinct
+from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 
 from app.models.models import DishModel, MenuModel, SubmenuModel

@@ -1,21 +1,19 @@
 from typing import Generator
 
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 from starlette.testclient import TestClient
 
+from app.config import settings
 from main import app
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-
-from app.config import settings
-
 SQLALCHEMY_TEST_DATABASE_URL = (
-    f"postgresql://{settings.POSTGRES_USER}:"
-    f"{settings.POSTGRES_PASSWORD}@"
-    f"{settings.POSTGRES_HOSTNAME}:"
-    f"{settings.DATABASE_PORT}/"
-    f"{settings.POSTGRES_DB}"
+    f'postgresql://{settings.POSTGRES_USER}:'
+    f'{settings.POSTGRES_PASSWORD}@'
+    f'{settings.POSTGRES_HOSTNAME}:'
+    f'{settings.DATABASE_PORT}/'
+    f'{settings.POSTGRES_DB}'
 )
 
 engine = create_engine(SQLALCHEMY_TEST_DATABASE_URL)
@@ -32,7 +30,7 @@ def get_test_db() -> Generator:
         db.close()
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope='function', autouse=True)
 def truncate_tables(get_test_db: Session):
     with get_test_db as test_db:
         test_db.execute('''TRUNCATE TABLE menu CASCADE;''')

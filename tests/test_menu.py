@@ -1,4 +1,4 @@
-from tests.conftest import test_client, prefix
+from tests.conftest import prefix, test_client
 
 
 def test_read_menus_handler():
@@ -22,7 +22,7 @@ def test_read_menu_handler(data_menu, create_menu, get_first_menu_id):
 def test_read_inexistent_menu():
     response = test_client.get(prefix+'/menus/1')
     assert response.status_code == 404
-    assert response.json() == {"detail": "menu not found"}
+    assert response.json() == {'detail': 'menu not found'}
 
 
 def test_create_menu_handler(data_menu):

@@ -1,4 +1,4 @@
-from tests.conftest import test_client, prefix
+from tests.conftest import prefix, test_client
 
 
 def test_read_dishes_handler(
@@ -60,7 +60,7 @@ def test_read_inexistent_dish(
     submenu_id = get_first_submenu_id()
     response = test_client.get(prefix+f'/menus/{menu_id}/submenus/{submenu_id}/dishes/1')
     assert response.status_code == 404
-    assert response.json() == {"detail": "dish not found"}
+    assert response.json() == {'detail': 'dish not found'}
 
 
 def test_create_dish_handler(

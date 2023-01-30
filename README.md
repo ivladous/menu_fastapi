@@ -12,7 +12,7 @@
 ## Run app in Docker
 
 ```commandline
-docker-compose up -d 
+docker-compose up -d
 ```
 
 ## Run tests in Docker

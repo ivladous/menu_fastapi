@@ -1,18 +1,16 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-
 from app.config import settings
 
 SQLALCHEMY_DATABASE_URL = (
-    f"postgresql://{settings.POSTGRES_USER}:"
-    f"{settings.POSTGRES_PASSWORD}@"
-    f"{settings.POSTGRES_HOSTNAME}:"
-    f"{settings.DATABASE_PORT}/"
-    f"{settings.POSTGRES_DB}"
+    f'postgresql://{settings.POSTGRES_USER}:'
+    f'{settings.POSTGRES_PASSWORD}@'
+    f'{settings.POSTGRES_HOSTNAME}:'
+    f'{settings.DATABASE_PORT}/'
+    f'{settings.POSTGRES_DB}'
 )
 
 # this is the Alembic Config object, which provides
@@ -22,7 +20,7 @@ config = context.config
 
 # this will overwrite the ini-file sqlalchemy.url path
 # with the path given in the config of the main code
-config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
+config.set_main_option('sqlalchemy.url', SQLALCHEMY_DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -32,6 +30,7 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 from app.models.models import Base
+
 target_metadata = Base.metadata
 # target_metadata = None
 
@@ -53,12 +52,12 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = config.get_main_option('sqlalchemy.url')
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
+        dialect_opts={'paramstyle': 'named'},
     )
 
     with context.begin_transaction():
@@ -74,7 +73,7 @@ def run_migrations_online() -> None:
     """
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
-        prefix="sqlalchemy.",
+        prefix='sqlalchemy.',
         poolclass=pool.NullPool,
     )
 
