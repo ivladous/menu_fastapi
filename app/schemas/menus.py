@@ -7,11 +7,23 @@ class MenuBase(BaseModel):
 
 
 class MenuCreate(MenuBase):
-    pass
+    class Config:
+        schema_extra = {
+            'example': {
+                'title': 'Menu title example',
+                'description': 'Menu description example',
+            }
+        }
 
 
 class MenuUpdate(MenuBase):
-    pass
+    class Config:
+        schema_extra = {
+            'example': {
+                'title': 'Updated menu title example',
+                'description': 'Updated menu description example',
+            }
+        }
 
 
 class MenuInDBBase(MenuBase):
@@ -24,4 +36,13 @@ class MenuInDBBase(MenuBase):
 
 
 class Menu(MenuInDBBase):
-    pass
+    class Config:
+        schema_extra = {
+            'example': {
+                'id': 104,
+                'title': 'Menu title example',
+                'description': 'Menu description example',
+                'submenus_count': 10,
+                'dishes_count': 20,
+            }
+        }

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.models.models import DishModel, SubmenuModel
 from app.schemas.menus import MenuUpdate
-from app.schemas.submenus import SubmenuCreate
+from app.schemas.submenus import SubmenuCreate, SubmenuUpdate
 
 
 def get_submenus(db: Session, menu_id: int):
@@ -44,7 +44,7 @@ def create_submenu(db: Session, submenu: SubmenuCreate, menu_id: int):
     return db_submenu
 
 
-def update_submenu(db: Session, submenu: MenuUpdate, menu_id: int, submenu_id: id):
+def update_submenu(db: Session, submenu: SubmenuUpdate, menu_id: int, submenu_id: id):
     updated_submenu = (
         db.query(SubmenuModel)
         .filter(SubmenuModel.menu_id == menu_id, SubmenuModel.id == submenu_id)

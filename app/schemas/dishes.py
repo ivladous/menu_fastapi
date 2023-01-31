@@ -9,9 +9,25 @@ class DishBase(BaseModel):
 class DishCreate(DishBase):
     price: float
 
+    class Config:
+        schema_extra = {
+            'example': {
+                'title': 'Dish title example',
+                'description': 'Dish description example',
+                'price': 610.9,
+            }
+        }
+
 
 class DishUpdate(DishCreate):
-    pass
+    class Config:
+        schema_extra = {
+            'example': {
+                'title': 'Updated dish title example',
+                'description': 'Updated dish description example',
+                'price': 450.3,
+            }
+        }
 
 
 class DishInDBBase(DishBase):
@@ -23,4 +39,12 @@ class DishInDBBase(DishBase):
 
 
 class Dish(DishInDBBase):
-    pass
+    class Config:
+        schema_extra = {
+            'example': {
+                'id': 30,
+                'title': 'Dish title example',
+                'description': 'Dish description example',
+                'price': 610.8,
+            }
+        }

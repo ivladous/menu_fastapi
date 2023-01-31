@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.crud import crud_menu, crud_submenu
 from app.dependencies import get_db
 from app.schemas.menus import MenuUpdate
-from app.schemas.submenus import Submenu, SubmenuCreate
+from app.schemas.submenus import Submenu, SubmenuCreate, SubmenuUpdate
 from cache.cache import r_cache
 
 router = APIRouter(
@@ -14,13 +14,23 @@ router = APIRouter(
 )
 
 
-@router.get('/{menu_id}/submenus/', response_model=list[Submenu])
+@router.get(
+    '/{menu_id}/submenus/',
+    response_model=list[Submenu],
+    summary='Read all the submenus',
+    response_description='All submenus',
+)
 def read_submenus(menu_id: int, db: Session = Depends(get_db)):
     db_submenus = crud_submenu.get_submenus(db=db, menu_id=menu_id)
     return db_submenus
 
 
-@router.get('/{menu_id}/submenus/{submenu_id}', response_model=Submenu)
+@router.get(
+    '/{menu_id}/submenus/{submenu_id}',
+    response_model=Submenu,
+    summary='Read the submenu',
+    description='Read the submenu by given id'
+)
 def read_submenu(menu_id: int, submenu_id: int, db: Session = Depends(get_db)):
     if r_cache.exists(f'submenu:{submenu_id}'):
         cache_submenu = r_cache.json().get(f'submenu:{submenu_id}')
@@ -31,7 +41,13 @@ def read_submenu(menu_id: int, submenu_id: int, db: Session = Depends(get_db)):
     return db_submenu
 
 
-@router.post('/{menu_id}/submenus/', status_code=201, response_model=Submenu)
+@router.post(
+    '/{menu_id}/submenus/',
+    status_code=201,
+    response_model=Submenu,
+    summary='Create a submenu',
+    response_description='The created submenu',
+)
 def create_submenu(menu_id: int, submenu: SubmenuCreate, db: Session = Depends(get_db)):
     created_submenu = crud_submenu.create_submenu(db=db, submenu=submenu, menu_id=menu_id)
     db_submenu = crud_submenu.get_submenu(db=db, menu_id=menu_id, submenu_id=created_submenu.id)
@@ -41,11 +57,16 @@ def create_submenu(menu_id: int, submenu: SubmenuCreate, db: Session = Depends(g
     return db_submenu
 
 
-@router.patch('/{menu_id}/submenus/{submenu_id}', response_model=Submenu)
+@router.patch(
+    '/{menu_id}/submenus/{submenu_id}',
+    response_model=Submenu,
+    summary='Update the submenu',
+    response_description='The updated submenu',
+)
 def update_submenu(
         menu_id: int,
         submenu_id: int,
-        submenu: MenuUpdate,
+        submenu: SubmenuUpdate,
         db: Session = Depends(get_db),
 ):
     updated_submenu = crud_submenu.update_submenu(db=db, submenu=submenu, menu_id=menu_id, submenu_id=submenu_id)
@@ -57,7 +78,11 @@ def update_submenu(
     return db_submenu_updated
 
 
-@router.delete('/{menu_id}/submenus/{submenu_id}')
+@router.delete(
+    '/{menu_id}/submenus/{submenu_id}',
+    summary='Delete the submenu',
+    description='Delete the submenu with given id',
+)
 def delete_submenu(menu_id: int, submenu_id: int, db: Session = Depends(get_db)):
     deleted_submenu = crud_submenu.delete_submenu(db=db, menu_id=menu_id, submenu_id=submenu_id)
     if not deleted_submenu:

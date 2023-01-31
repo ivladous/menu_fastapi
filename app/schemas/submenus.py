@@ -7,11 +7,23 @@ class SubmenuBase(BaseModel):
 
 
 class SubmenuCreate(SubmenuBase):
-    pass
+    class Config:
+        schema_extra = {
+            'example': {
+                'title': 'Submenu title example',
+                'description': 'Submenu description example',
+            }
+        }
 
 
 class SubmenuUpdate(SubmenuBase):
-    pass
+    class Config:
+        schema_extra = {
+            'example': {
+                'title': 'Updated submenu title example',
+                'description': 'Updated submenu description example',
+            }
+        }
 
 
 class SubmenuInDBBase(SubmenuBase):
@@ -23,4 +35,12 @@ class SubmenuInDBBase(SubmenuBase):
 
 
 class Submenu(SubmenuInDBBase):
-    pass
+    class Config:
+        schema_extra = {
+            'example': {
+                'id': 23,
+                'title': 'Submenu title example',
+                'description': 'Submenu description example',
+                'dishes_count': 3,
+            }
+        }

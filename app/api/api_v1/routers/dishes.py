@@ -13,13 +13,23 @@ router = APIRouter(
 )
 
 
-@router.get('/{menu_id}/submenus/{submenu_id}/dishes/', response_model=list[Dish])
+@router.get(
+    '/{menu_id}/submenus/{submenu_id}/dishes/',
+    response_model=list[Dish],
+    summary='Read all the dishes',
+    response_description='All dishes',
+)
 def read_dishes(menu_id: int, submenu_id: int, db: Session = Depends(get_db)):
     db_dishes = crud_dish.get_dishes(db=db, menu_id=menu_id, submenu_id=submenu_id)
     return db_dishes
 
 
-@router.get('/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}', response_model=Dish)
+@router.get(
+    '/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+    response_model=Dish,
+    summary='Read the dish',
+    response_description='The dish by given id',
+)
 def read_dish(menu_id: int, submenu_id: int, dish_id: int, db: Session = Depends(get_db)):
     if r_cache.exists(f'dish:{dish_id}'):
         cache_dish = r_cache.json().get(f'dish:{dish_id}')
@@ -30,7 +40,13 @@ def read_dish(menu_id: int, submenu_id: int, dish_id: int, db: Session = Depends
     return db_dish
 
 
-@router.post('/{menu_id}/submenus/{submenu_id}/dishes/', status_code=201, response_model=Dish)
+@router.post(
+    '/{menu_id}/submenus/{submenu_id}/dishes/',
+    status_code=201,
+    response_model=Dish,
+    summary='Create a dish',
+    response_description='The created dish',
+)
 def create_dish(menu_id: int, submenu_id: int, dish: DishCreate, db: Session = Depends(get_db)):
     created_dish = crud_dish.create_dish(db=db, submenu_id=submenu_id, dish=dish)
     if r_cache.exists(f'menu:{menu_id}'):
@@ -42,7 +58,12 @@ def create_dish(menu_id: int, submenu_id: int, dish: DishCreate, db: Session = D
     return created_dish
 
 
-@router.patch('/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}', response_model=Dish)
+@router.patch(
+    '/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+    response_model=Dish,
+    summary='Update the dish',
+    response_description='The updated dish',
+)
 def update_dish(
         menu_id: int,
         submenu_id: int,
@@ -59,7 +80,11 @@ def update_dish(
     return db_dish_updated
 
 
-@router.delete('/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}')
+@router.delete(
+    '/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+    summary='Delete the dish',
+    description='Delete the dish with given id',
+)
 def delete_dish(menu_id: int, submenu_id: int, dish_id: int, db: Session = Depends(get_db)):
     if not crud_dish.exists_dish(db=db, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id):
         raise HTTPException(status_code=404, detail='dish not found')

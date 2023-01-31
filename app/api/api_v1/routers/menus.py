@@ -12,13 +12,24 @@ router = APIRouter(
 )
 
 
-@router.get('/menus/', response_model=list[Menu])
+@router.get(
+    '/menus/',
+    response_model=list[Menu],
+    summary='Read all the menus',
+    response_description='All menus',
+)
 def read_menus(db: Session = Depends(get_db)):
     db_menus = crud_menu.get_menus(db)
     return db_menus
 
 
-@router.get('/menus/{menu_id}', response_model=Menu)
+@router.get(
+    '/menus/{menu_id}',
+    response_model=Menu,
+    summary='Read the menu',
+    response_description='The menu by given id',
+    description='Read the menu by given id',
+)
 def read_menu(menu_id: int, db: Session = Depends(get_db)):
     if r_cache.exists(f'menu:{menu_id}'):
         cache_menu = r_cache.json().get(f'menu:{menu_id}')
@@ -30,14 +41,25 @@ def read_menu(menu_id: int, db: Session = Depends(get_db)):
     return db_menu
 
 
-@router.post('/menus/', status_code=201, response_model=Menu)
+@router.post(
+    '/menus/',
+    status_code=201,
+    response_model=Menu,
+    summary='Create a menu',
+    response_description='The created menu',
+)
 def create_menu(menu: MenuCreate, db: Session = Depends(get_db)):
     created_menu = crud_menu.create_menu(db=db, menu=menu)
     db_menu = crud_menu.get_menu(db, menu_id=created_menu.id)
     return db_menu
 
 
-@router.patch('/menus/{menu_id}', response_model=Menu)
+@router.patch(
+    '/menus/{menu_id}',
+    response_model=Menu,
+    summary='Update the menu',
+    response_description='The updated menu',
+)
 def update_menu(menu: MenuUpdate, menu_id: int, db: Session = Depends(get_db)):
     updated = crud_menu.update_menu(db=db, menu=menu, menu_id=menu_id)
     if not updated:
@@ -48,7 +70,11 @@ def update_menu(menu: MenuUpdate, menu_id: int, db: Session = Depends(get_db)):
     return db_menu_updated
 
 
-@router.delete('/menus/{menu_id}')
+@router.delete(
+    '/menus/{menu_id}',
+    summary='Delete the menu',
+    description='Delete the menu with given id',
+)
 def delete_menu(menu_id: int, db: Session = Depends(get_db)):
     deleted = crud_menu.delete_menu(db=db, menu_id=menu_id)
     if not deleted:
