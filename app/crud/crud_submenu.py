@@ -2,7 +2,6 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.models import DishModel, SubmenuModel
-from app.schemas.menus import MenuUpdate
 from app.schemas.submenus import SubmenuCreate, SubmenuUpdate
 
 

@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from app.crud import crud_menu
+from app.cache.cache import r_cache
 from app.dependencies import get_db
 from app.schemas.menus import Menu, MenuCreate, MenuUpdate
-from cache.cache import r_cache
+from app.service import service_menu
 
 router = APIRouter(
     tags=['menus'],
@@ -19,8 +19,8 @@ router = APIRouter(
     response_description='All menus',
 )
 def read_menus(db: Session = Depends(get_db)):
-    db_menus = crud_menu.get_menus(db)
-    return db_menus
+    menus = service_menu.get_menus(db)
+    return menus
 
 
 @router.get(
@@ -31,14 +31,11 @@ def read_menus(db: Session = Depends(get_db)):
     description='Read the menu by given id',
 )
 def read_menu(menu_id: int, db: Session = Depends(get_db)):
-    if r_cache.exists(f'menu:{menu_id}'):
-        cache_menu = r_cache.json().get(f'menu:{menu_id}')
-        return cache_menu
-    db_menu = crud_menu.get_menu(db, menu_id=menu_id)
-    if db_menu is None:
+    menu = service_menu.get_menu(menu_id, db)
+    if menu is None:
         raise HTTPException(status_code=404, detail='menu not found')
-    r_cache.json().set(f'menu:{menu_id}', '$', jsonable_encoder(db_menu))
-    return db_menu
+    r_cache.json().set(f'menu:{menu_id}', '$', jsonable_encoder(menu))
+    return menu
 
 
 @router.post(
@@ -49,9 +46,8 @@ def read_menu(menu_id: int, db: Session = Depends(get_db)):
     response_description='The created menu',
 )
 def create_menu(menu: MenuCreate, db: Session = Depends(get_db)):
-    created_menu = crud_menu.create_menu(db=db, menu=menu)
-    db_menu = crud_menu.get_menu(db, menu_id=created_menu.id)
-    return db_menu
+    created_menu = service_menu.create_menu(db=db, menu=menu)
+    return created_menu
 
 
 @router.patch(
@@ -61,13 +57,10 @@ def create_menu(menu: MenuCreate, db: Session = Depends(get_db)):
     response_description='The updated menu',
 )
 def update_menu(menu: MenuUpdate, menu_id: int, db: Session = Depends(get_db)):
-    updated = crud_menu.update_menu(db=db, menu=menu, menu_id=menu_id)
-    if not updated:
+    updated_menu = service_menu.update_menu(db=db, menu=menu, menu_id=menu_id)
+    if updated_menu is None:
         raise HTTPException(status_code=404, detail='menu not found')
-    db_menu_updated = crud_menu.get_menu(db, menu_id=menu_id)
-    if r_cache.exists(f'menu:{menu_id}'):
-        r_cache.json().set(f'menu:{menu_id}', '$', jsonable_encoder(db_menu_updated))
-    return db_menu_updated
+    return updated_menu
 
 
 @router.delete(
@@ -76,9 +69,7 @@ def update_menu(menu: MenuUpdate, menu_id: int, db: Session = Depends(get_db)):
     description='Delete the menu with given id',
 )
 def delete_menu(menu_id: int, db: Session = Depends(get_db)):
-    deleted = crud_menu.delete_menu(db=db, menu_id=menu_id)
+    deleted = service_menu.delete_menu(db=db, menu_id=menu_id)
     if not deleted:
         raise HTTPException(status_code=404, detail='menu not found')
-    if r_cache.exists(f'menu:{menu_id}'):
-        r_cache.json().delete(f'menu:{menu_id}')
     return {'status': True, 'message': 'The menu has been deleted'}

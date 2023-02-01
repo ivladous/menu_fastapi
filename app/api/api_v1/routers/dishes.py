@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from app.crud import crud_dish, crud_menu, crud_submenu
 from app.dependencies import get_db
 from app.schemas.dishes import Dish, DishCreate, DishUpdate
-from cache.cache import r_cache
+from app.service import service_dish
 
 router = APIRouter(
     prefix='/menus',
@@ -20,8 +18,8 @@ router = APIRouter(
     response_description='All dishes',
 )
 def read_dishes(menu_id: int, submenu_id: int, db: Session = Depends(get_db)):
-    db_dishes = crud_dish.get_dishes(db=db, menu_id=menu_id, submenu_id=submenu_id)
-    return db_dishes
+    dishes = service_dish.get_dishes(db=db, menu_id=menu_id, submenu_id=submenu_id)
+    return dishes
 
 
 @router.get(
@@ -31,13 +29,10 @@ def read_dishes(menu_id: int, submenu_id: int, db: Session = Depends(get_db)):
     response_description='The dish by given id',
 )
 def read_dish(menu_id: int, submenu_id: int, dish_id: int, db: Session = Depends(get_db)):
-    if r_cache.exists(f'dish:{dish_id}'):
-        cache_dish = r_cache.json().get(f'dish:{dish_id}')
-        return cache_dish
-    db_dish = crud_dish.get_dish(db, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
-    if db_dish is None:
+    dish = service_dish.get_dish(db=db, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
+    if dish is None:
         raise HTTPException(status_code=404, detail='dish not found')
-    return db_dish
+    return dish
 
 
 @router.post(
@@ -48,13 +43,7 @@ def read_dish(menu_id: int, submenu_id: int, dish_id: int, db: Session = Depends
     response_description='The created dish',
 )
 def create_dish(menu_id: int, submenu_id: int, dish: DishCreate, db: Session = Depends(get_db)):
-    created_dish = crud_dish.create_dish(db=db, submenu_id=submenu_id, dish=dish)
-    if r_cache.exists(f'menu:{menu_id}'):
-        db_menu_updated = crud_menu.get_menu(db, menu_id=menu_id)
-        r_cache.json().set(f'menu:{menu_id}', '$', jsonable_encoder(db_menu_updated))
-    if r_cache.exists(f'submenu:{submenu_id}'):
-        db_submenu_updated = crud_submenu.get_submenu(db, menu_id=menu_id, submenu_id=submenu_id)
-        r_cache.json().set(f'submenu:{submenu_id}', '$', jsonable_encoder(db_submenu_updated))
+    created_dish = service_dish.create_dish(db=db, menu_id=menu_id, submenu_id=submenu_id, dish=dish)
     return created_dish
 
 
@@ -67,17 +56,14 @@ def create_dish(menu_id: int, submenu_id: int, dish: DishCreate, db: Session = D
 def update_dish(
         menu_id: int,
         submenu_id: int,
-        dish_id: int, dish:
-        DishUpdate,
-        db: Session = Depends(get_db)
+        dish_id: int,
+        dish: DishUpdate,
+        db: Session = Depends(get_db),
 ):
-    if not crud_dish.exists_dish(db=db, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id):
+    updated_dish = service_dish.update_dish(db=db, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id, dish=dish)
+    if updated_dish is None:
         raise HTTPException(status_code=404, detail='dish not found')
-    crud_dish.update_dish(db=db, dish=dish, dish_id=dish_id)
-    db_dish_updated = crud_dish.get_dish(db, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
-    if r_cache.exists(f'dish:{dish_id}'):
-        r_cache.json().set(f'dish:{dish_id}', '$', jsonable_encoder(db_dish_updated))
-    return db_dish_updated
+    return updated_dish
 
 
 @router.delete(
@@ -86,15 +72,7 @@ def update_dish(
     description='Delete the dish with given id',
 )
 def delete_dish(menu_id: int, submenu_id: int, dish_id: int, db: Session = Depends(get_db)):
-    if not crud_dish.exists_dish(db=db, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id):
+    deleted = service_dish.delete_dish(db=db, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
+    if not deleted:
         raise HTTPException(status_code=404, detail='dish not found')
-    deleted_dish = crud_dish.delete_dish(db=db, dish_id=dish_id)
-    if r_cache.exists(f'dish:{dish_id}'):
-        r_cache.json().delete(f'dish:{dish_id}')
-    if r_cache.exists(f'menu:{menu_id}'):
-        db_menu_updated = crud_menu.get_menu(db, menu_id=menu_id)
-        r_cache.json().set(f'menu:{menu_id}', '$', jsonable_encoder(db_menu_updated))
-    if r_cache.exists(f'submenu:{submenu_id}'):
-        db_submenu_updated = crud_submenu.get_submenu(db, menu_id=menu_id, submenu_id=submenu_id)
-        r_cache.json().set(f'submenu:{submenu_id}', '$', jsonable_encoder(db_submenu_updated))
-    return {'deleted': deleted_dish, 'status': True, 'message': 'The dish has been deleted'}
+    return {'status': True, 'message': 'The dish has been deleted'}
